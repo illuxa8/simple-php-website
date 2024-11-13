@@ -1,0 +1,58 @@
+pipeline {
+    agent any
+
+    environment {
+        registry = 'illuxa8'
+        imageName = 'simple-php-website'
+        dockerImage = "${registry}/${imageName}"
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                script {
+                    // Checkout the code from SCM
+                    checkout scm
+                }
+            }
+        }
+
+        stage('Build') {
+            steps {
+                script {
+                    // Tagging the image with the commit hash or Jenkins build number
+                    def commitHash = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+                    def imageTag = "${dockerImage}:${commitHash}"
+                    
+                    // Build Docker image
+                    sh "docker build -t ${imageTag} ."
+                }
+            }
+        }
+
+        stage('Push to DockerHub') {
+            steps {
+                script {
+                    // Docker login using Jenkins credentials
+                    withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASSWORD')]) {
+                        sh "docker login -u ${DOCKER_USER} -p ${DOCKER_PASSWORD}"
+                    }
+                    
+                    // Push Docker image to DockerHub
+                    def imageTag = "${dockerImage}:${commitHash}"
+                    sh "docker push ${imageTag}"
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                script {
+                    // Rebuild and redeploy Docker containers using docker-compose
+                    sh 'docker-compose down'
+                    sh 'docker-compose up -d --build'
+                }
+            }
+        }
+    }
+}
