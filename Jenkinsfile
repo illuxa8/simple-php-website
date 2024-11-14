@@ -1,10 +1,11 @@
-pipeline {
+kpipeline {
     agent any
 
     environment {
-        registry = 'illuxa2024'   // Ваш Docker Hub username
-        imageName = 'vis'         // Ім'я вашого репозиторію на Docker Hub
+        registry = 'illuxa2024'        // Ваш Docker Hub username
+        imageName = 'vis'              // Ім'я вашого репозиторію на Docker Hub
         dockerImage = "${registry}/${imageName}"  // Формуємо повний шлях до образу
+        DOCKER_PASSWORD = '112233illya'     // Ваш Docker Hub пароль (небезпечно для продакшн середовища)
     }
 
     stages {
@@ -48,3 +49,4 @@ pipeline {
         }
     }
 }
+
