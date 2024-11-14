@@ -1,4 +1,4 @@
-kpipeline {
+pipeline {
     agent any
 
     environment {
@@ -12,7 +12,6 @@ kpipeline {
         stage('Checkout') {
             steps {
                 script {
-                    // Checkout the code from SCM
                     checkout scm
                 }
             }
@@ -21,7 +20,6 @@ kpipeline {
         stage('Build') {
             steps {
                 script {
-                    // Build Docker image
                     sh "docker build -t ${dockerImage} ."
                 }
             }
@@ -30,9 +28,7 @@ kpipeline {
         stage('Push to DockerHub') {
             steps {
                 script {
-                    // Login to DockerHub
                     sh "docker login -u ${registry} -p ${DOCKER_PASSWORD}"
-                    // Push the Docker image to DockerHub
                     sh "docker push ${dockerImage}"
                 }
             }
@@ -41,7 +37,6 @@ kpipeline {
         stage('Deploy') {
             steps {
                 script {
-                    // Rebuild and redeploy Docker containers
                     sh 'docker-compose down'
                     sh 'docker-compose up -d --build'
                 }
@@ -49,4 +44,3 @@ kpipeline {
         }
     }
 }
-
