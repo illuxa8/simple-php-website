@@ -1,9 +1,9 @@
-pipeline {
+kpipeline {
     agent any
 
     environment {
-        registry = 'illuxa2024'   // Заміни на свій Docker Hub username
-        imageName = 'simple-php-website'  // Заміни на ім'я твого образу
+        registry = 'illuxa2024'  // Заміни на свій Docker Hub username
+        imageName = 'vis'  // Заміни на ім'я твого образу
         dockerImage = "${registry}/${imageName}"
     }
 
@@ -21,6 +21,7 @@ pipeline {
             steps {
                 script {
                     // Build Docker image
+                    echo "Building Docker image ${dockerImage}"
                     sh "docker build -t ${dockerImage} ."
                 }
             }
@@ -29,9 +30,11 @@ pipeline {
         stage('Push to DockerHub') {
             steps {
                 script {
-                    // Login to DockerHub
-                    sh "docker login -u ${registry} -p 112233illya"
-                    sh "docker push ${dockerImage}"
+                    // Login to DockerHub using Jenkins credentials
+                    withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                        sh "docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}"
+                        sh "docker push ${dockerImage}"
+                    }
                 }
             }
         }
@@ -39,6 +42,9 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
+                    // Перевірка наявності docker-compose.yml
+                    sh 'ls -alh docker-compose.yml'
+                    
                     // Rebuild and redeploy Docker containers
                     sh 'docker-compose down'
                     sh 'docker-compose up -d --build'
@@ -47,3 +53,4 @@ pipeline {
         }
     }
 }
+
