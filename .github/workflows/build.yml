@@ -19,8 +19,8 @@ jobs:
 
     - name: Build Docker image
       run: |
-        docker build -t illuxa/vis:latest .
+        docker build -t illuxa2024/vis:latest .
 
     - name: Push Docker image to Docker Hub
       run: |
-        docker push illuxa/vis:latest
+        docker push illuxa2024/vis:latest
