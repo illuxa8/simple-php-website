@@ -5,7 +5,6 @@ pipeline {
         registry = 'illuxa2024'   // Заміни на свій Docker Hub username
         imageName = 'simple-php-website'  // Заміни на ім'я твого образу
         dockerImage = "${registry}/${imageName}"
-        dockerhubToken = 'dckr_pat_xNORmY0UXN-mtKQyzopV5IZMuLI'  // Токен доступу до Docker Hub
     }
 
     stages {
