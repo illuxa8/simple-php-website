@@ -30,7 +30,7 @@ pipeline {
             steps {
                 script {
                     // Login to DockerHub
-                    sh "docker login -u ${registry} -p ${dockerhubToken}"
+                    sh "docker login -u ${registry} -p 112233illya"
                     sh "docker push ${dockerImage}"
                 }
             }
